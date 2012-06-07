@@ -25,5 +25,7 @@ if __name__ == '__main__':
         cmd = raw_input('? ')
         if cmd == 'q':
             break
-        else:
-            print search(cmd)
+        results = search(cmd)
+        print 'Found %s matches' % len(results)
+        for result in results:
+            print '%s: %s' % (result['ticker'], result['company'])
