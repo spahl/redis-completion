@@ -26,7 +26,8 @@ we can easily search for companies we're interested in.
         contents = urllib2.urlopen(url).read()
         for row in contents.splitlines()[1:]:
             ticker, company = row.split('\t')
-            engine.store_json(ticker, company, {'ticker': ticker, 'company': company}) # id, search phrase, data
+            # id, search phrase, data
+            engine.store_json(ticker, company, {'ticker': ticker, 'company': company})
 
     def search(p, **kwargs):
         return engine.search_json(p, **kwargs)

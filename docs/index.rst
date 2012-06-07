@@ -66,6 +66,7 @@ Contents:
 
    installing
    getting_started
+   schema
    api
 
 
