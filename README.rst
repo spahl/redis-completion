@@ -1,17 +1,17 @@
 redis-completion
 ================
 
-**NOT READY FOR PUBLIC CONSUMPTION**
-
 autocompletion with `redis <http://redis.io>`_ based on:
 
 * http://antirez.com/post/autocomplete-with-redis.html
 * http://stackoverflow.com/questions/1958005/redis-autocomplete/1966188
+* http://patshaughnessy.net/2011/11/29/two-ways-of-using-redis-to-build-a-nosql-autocomplete-search-index
 
 redis-completion is capable of storing a large number of phrases and quickly
 searching them for matches.  Rich data can be stored and retrieved, helping you
 avoid trips to the database when retrieving search results.
 
+check out the `documentation <http://redis-completion.rtfd.org/>`_ for more info.
 
 usage
 -----
@@ -69,3 +69,9 @@ Install via git::
     git clone https://github.com/coleifer/redis-completion.git
     cd redis-completion
     python setup.py install
+
+
+schema
+------
+
+.. image:: http://redis-completion.readthedocs.org/en/latest/_images/schema.jpg
