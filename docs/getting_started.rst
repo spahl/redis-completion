@@ -14,6 +14,8 @@ Let's get started by writing a script to populate our index by pulling the file
 down, reading its contents, then storing a mapping of company name -> symbol so
 we can easily search for companies we're interested in.
 
+.. note:: This code can be found `in the examples <https://github.com/coleifer/redis-completion/blob/master/examples/stocks.py>`_
+
 .. code-block:: python
 
     import urllib2
