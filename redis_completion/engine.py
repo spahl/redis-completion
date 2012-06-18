@@ -1,22 +1,11 @@
-try:
-    import simplejson as json
-except ImportError:
-    import json
 import re
 
 from redis import Redis
 
-from redis_completion.stop_words import STOP_WORDS as _STOP_WORDS
+from redis_completion.base import BaseEngine, AGGRESSIVE_STOP_WORDS, DEFAULT_STOP_WORDS
 
 
-# aggressive stop words will be better when the length of the document is longer
-AGGRESSIVE_STOP_WORDS = _STOP_WORDS
-
-# default stop words should work fine for titles and things like that
-DEFAULT_STOP_WORDS = set(['a', 'an', 'of', 'the'])
-
-
-class RedisEngine(object):
+class RedisEngine(BaseEngine):
     """
     References
     ----------
@@ -26,12 +15,11 @@ class RedisEngine(object):
     http://patshaughnessy.net/2011/11/29/two-ways-of-using-redis-to-build-a-nosql-autocomplete-search-index
     """
     def __init__(self, min_length=2, prefix='ac', stop_words=None, cache_timeout=300, **conn_kwargs):
+        super(RedisEngine, self).__init__(min_length, prefix, stop_words)
+
         self.conn_kwargs = conn_kwargs
         self.client = self.get_client()
 
-        self.min_length = min_length
-        self.prefix = prefix
-        self.stop_words = (stop_words is None) and DEFAULT_STOP_WORDS or stop_words
         self.cache_timeout = cache_timeout
 
         self.data_key = '%s:d' % self.prefix
@@ -99,9 +87,6 @@ class RedisEngine(object):
 
         pipe.execute()
 
-    def store_json(self, obj_id, title, data_dict):
-        return self.store(obj_id, title, json.dumps(data_dict))
-
     def remove(self, obj_id):
         obj_id = str(obj_id)
         title = self.client.hget(self.title_key, obj_id) or ''
@@ -161,9 +146,3 @@ class RedisEngine(object):
                 break
 
         return data
-
-    def search_json(self, phrase, limit=None, filters=None, mappers=None):
-        if not mappers:
-            mappers = []
-        mappers.insert(0, json.loads)
-        return self.search(phrase, limit, filters, mappers)
