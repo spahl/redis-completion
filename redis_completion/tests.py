@@ -2,14 +2,18 @@ import random
 from unittest import TestCase
 
 from redis_completion.engine import RedisEngine
+from redis_completion.fun.purepy import PythonEngine
 
 
 stop_words = set(['a', 'an', 'the', 'of'])
 
-class RedisCompletionTestCase(TestCase):
+class BaseCompletionTestCase(object):
     def setUp(self):
-        self.engine = RedisEngine(prefix='testac', db=15)
+        self.engine = self.get_engine()
         self.engine.flush()
+
+    def get_engine(self):
+        raise NotImplementedError
 
     def store_data(self, id=None):
         test_data = (
@@ -128,6 +132,21 @@ class RedisCompletionTestCase(TestCase):
             {'obj_id': 3, 'title': 'web testing python code', 'secret': 'herp'},
         ])
 
+    def test_clean_phrase(self):
+        self.assertEqual(self.engine.clean_phrase('abc def ghi'), ['abc', 'def', 'ghi'])
+
+        self.assertEqual(self.engine.clean_phrase('a A tHe an a'), [])
+        self.assertEqual(self.engine.clean_phrase(''), [])
+
+        self.assertEqual(
+            self.engine.clean_phrase('The Best of times, the blurst of times'),
+            ['best', 'times', 'blurst', 'times'])
+
+
+class RedisCompletionTestCase(BaseCompletionTestCase, TestCase):
+    def get_engine(self):
+        return RedisEngine(prefix='testac', db=15)
+
     def test_removing_objects_in_depth(self):
         # want to ensure that redis is cleaned up and does not become polluted
         # with spurious keys when objects are removed
@@ -154,12 +173,7 @@ class RedisCompletionTestCase(TestCase):
         self.engine.remove(1)
         self.assertEqual(len(redis_client.keys()), initial_key_count)
 
-    def test_clean_phrase(self):
-        self.assertEqual(self.engine.clean_phrase('abc def ghi'), ['abc', 'def', 'ghi'])
 
-        self.assertEqual(self.engine.clean_phrase('a A tHe an a'), [])
-        self.assertEqual(self.engine.clean_phrase(''), [])
-
-        self.assertEqual(
-            self.engine.clean_phrase('The Best of times, the blurst of times'),
-            ['best', 'times', 'blurst', 'times'])
+class PurePyCompletionTestCase(BaseCompletionTestCase, TestCase):
+    def get_engine(self):
+        return PythonEngine()

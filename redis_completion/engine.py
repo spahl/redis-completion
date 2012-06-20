@@ -1,5 +1,3 @@
-import re
-
 from redis import Redis
 
 from redis_completion.base import BaseEngine, AGGRESSIVE_STOP_WORDS, DEFAULT_STOP_WORDS
@@ -39,34 +37,6 @@ class RedisEngine(BaseEngine):
         # batch keys
         for i in range(0, len(keys), batch_size):
             self.client.delete(*keys[i:i+batch_size])
-
-    def score_key(self, k, max_size=20):
-        k_len = len(k)
-        a = ord('a') - 2
-        score = 0
-
-        for i in range(max_size):
-            if i < k_len:
-                c = (ord(k[i]) - a)
-                if c < 2 or c > 27:
-                    c = 1
-            else:
-                c = 1
-            score += c*(27**(max_size-i))
-        return score
-
-    def clean_phrase(self, phrase):
-        phrase = re.sub('[^a-z0-9_\-\s]', '', phrase.lower())
-        return [w for w in phrase.split() if w not in self.stop_words]
-
-    def create_key(self, phrase):
-        return ' '.join(self.clean_phrase(phrase))
-
-    def autocomplete_keys(self, w):
-        ml = self.min_length
-        for i, char in enumerate(w[ml:]):
-            yield w[:i+ml]
-        yield w
 
     def store(self, obj_id, title=None, data=None):
         pipe = self.client.pipeline()
