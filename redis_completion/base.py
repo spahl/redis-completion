@@ -1,13 +1,14 @@
 try:
     import simplejson as json
 except ImportError:
-    import json
+    import json  # NOQA
 import re
 
 from redis_completion.stop_words import STOP_WORDS as _STOP_WORDS
 
 
-# aggressive stop words will be better when the length of the document is longer
+# aggressive stop words will be better
+# when the length of the document is longer
 AGGRESSIVE_STOP_WORDS = _STOP_WORDS
 
 # default stop words should work fine for titles and things like that
@@ -18,7 +19,8 @@ class BaseEngine(object):
     def __init__(self, min_length=2, prefix='ac', stop_words=None):
         self.min_length = min_length
         self.prefix = prefix
-        self.stop_words = (stop_words is None) and DEFAULT_STOP_WORDS or stop_words
+        self.stop_words = (stop_words is None) and DEFAULT_STOP_WORDS \
+                or stop_words
 
     def flush(self):
         raise NotImplementedError
@@ -54,7 +56,7 @@ class BaseEngine(object):
                     c = 1
             else:
                 c = 1
-            score += c*(27**(max_size-i))
+            score += c * (27 ** (max_size - i))
         return score
 
     def clean_phrase(self, phrase):
@@ -67,5 +69,5 @@ class BaseEngine(object):
     def autocomplete_keys(self, w):
         ml = self.min_length
         for i, char in enumerate(w[ml:]):
-            yield w[:i+ml]
+            yield w[:i + ml]
         yield w

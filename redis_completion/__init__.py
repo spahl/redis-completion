@@ -1,1 +1,1 @@
-from redis_completion.engine import RedisEngine
+from redis_completion.engine import RedisEngine  # NOQA

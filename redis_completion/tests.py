@@ -7,6 +7,7 @@ from redis_completion.fun.purepy import PythonEngine
 
 stop_words = set(['a', 'an', 'the', 'of'])
 
+
 class BaseCompletionTestCase(object):
     def setUp(self):
         self.engine = self.get_engine()
@@ -31,7 +32,7 @@ class BaseCompletionTestCase(object):
                 })
 
     def sort_results(self, r):
-        return sorted(r, key=lambda i:i['obj_id'])
+        return sorted(r, key=lambda i: i['obj_id'])
 
     def test_search(self):
         self.store_data()
@@ -40,14 +41,15 @@ class BaseCompletionTestCase(object):
         self.assertEqual(self.sort_results(results), [
             {'obj_id': 1, 'title': 'testing python', 'secret': 'herp'},
             {'obj_id': 2, 'title': 'testing python code', 'secret': 'derp'},
-            {'obj_id': 3, 'title': 'web testing python code', 'secret': 'herp'},
+            {'obj_id': 3, 'title': 'web testing python code', 'secret': 'herp'}
         ])
 
         results = self.engine.search_json('test')
         self.assertEqual(self.sort_results(results), [
             {'obj_id': 1, 'title': 'testing python', 'secret': 'herp'},
             {'obj_id': 2, 'title': 'testing python code', 'secret': 'derp'},
-            {'obj_id': 3, 'title': 'web testing python code', 'secret': 'herp'},
+            {'obj_id': 3, 'title': 'web testing python code',
+                'secret': 'herp'},
             {'obj_id': 4, 'title': 'unit tests with python', 'secret': 'derp'},
         ])
 
@@ -78,7 +80,7 @@ class BaseCompletionTestCase(object):
 
         self.assertEqual(self.sort_results(results), [
             {'obj_id': 1, 'title': 'testing python', 'secret': 'herp'},
-            {'obj_id': 3, 'title': 'web testing python code', 'secret': 'herp'},
+            {'obj_id': 3, 'title': 'web testing python code', 'secret': 'herp'}
         ])
 
     def test_simple(self):
@@ -89,10 +91,12 @@ class BaseCompletionTestCase(object):
         self.engine.store('unit tests with python')
 
         results = self.engine.search('testing')
-        self.assertEqual(results, ['testing python', 'testing python code', 'web testing python code'])
+        self.assertEqual(results, ['testing python', 'testing python code',
+            'web testing python code'])
 
         results = self.engine.search('code')
-        self.assertEqual(results, ['testing python code', 'web testing python code'])
+        self.assertEqual(results,
+                ['testing python code', 'web testing python code'])
 
     def test_correct_sorting(self):
         strings = []
@@ -120,7 +124,7 @@ class BaseCompletionTestCase(object):
         results = self.engine.search_json('testing')
         self.assertEqual(self.sort_results(results), [
             {'obj_id': 2, 'title': 'testing python code', 'secret': 'derp'},
-            {'obj_id': 3, 'title': 'web testing python code', 'secret': 'herp'},
+            {'obj_id': 3, 'title': 'web testing python code', 'secret': 'herp'}
         ])
 
         self.store_data(1)
@@ -129,11 +133,12 @@ class BaseCompletionTestCase(object):
         results = self.engine.search_json('testing')
         self.assertEqual(self.sort_results(results), [
             {'obj_id': 1, 'title': 'testing python', 'secret': 'herp'},
-            {'obj_id': 3, 'title': 'web testing python code', 'secret': 'herp'},
+            {'obj_id': 3, 'title': 'web testing python code', 'secret': 'herp'}
         ])
 
     def test_clean_phrase(self):
-        self.assertEqual(self.engine.clean_phrase('abc def ghi'), ['abc', 'def', 'ghi'])
+        self.assertEqual(self.engine.clean_phrase('abc def ghi'),
+                ['abc', 'def', 'ghi'])
 
         self.assertEqual(self.engine.clean_phrase('a A tHe an a'), [])
         self.assertEqual(self.engine.clean_phrase(''), [])
@@ -151,7 +156,6 @@ class RedisCompletionTestCase(BaseCompletionTestCase, TestCase):
         # want to ensure that redis is cleaned up and does not become polluted
         # with spurious keys when objects are removed
         redis_client = self.engine.client
-        prefix = self.engine.prefix
 
         initial_key_count = len(redis_client.keys())
 

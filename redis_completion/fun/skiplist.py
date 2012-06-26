@@ -7,9 +7,7 @@ http://code.activestate.com/recipes/576930/
 import random
 import sys
 import unittest
-from collections import deque
-from itertools import islice
-from math import log, ceil
+from math import log
 
 
 class Node(object):
@@ -30,14 +28,15 @@ class End(object):
     def __cmp__(self, other):
         return 1
 
-NIL = Node(End(), End(), [], []) # singleton terminator node
+NIL = Node(End(), End(), [], [])  # singleton terminator node
 
 
 class SkipList(object):
     def __init__(self, expected_size=100, score_unique=False):
         self.size = 0
         self.maxlevels = int(1 + log(expected_size, 2))
-        self.head = Node('HEAD', 'HEAD', [NIL] * self.maxlevels, [1] * self.maxlevels)
+        self.head = Node('HEAD', 'HEAD',
+                [NIL] * self.maxlevels, [1] * self.maxlevels)
         self.keys = {}
         self.score_unique = score_unique
 
@@ -114,7 +113,8 @@ class SkipList(object):
         steps_at_level = [0] * self.maxlevels
         node = self.head
         for level in reversed(range(self.maxlevels)):
-            while (node.next[level].value, node.next[level].key) <= (value, key):
+            while (node.next[level].value, node.next[level].key) \
+                    <= (value, key):
                 steps_at_level[level] += node.width[level]
                 node = node.next[level]
             if unique and node.value == value:
@@ -144,7 +144,8 @@ class SkipList(object):
         chain = [None] * self.maxlevels
         node = self.head
         for level in reversed(range(self.maxlevels)):
-            while (node.next[level].value, node.next[level].key) < (value, key):
+            while (node.next[level].value, node.next[level].key) \
+                    < (value, key):
                 node = node.next[level]
             chain[level] = node
 
@@ -234,7 +235,8 @@ class SkipListTestCase(unittest.TestCase):
 
     def test_indexing_slice(self):
         sl = self.randomize(self.ubuntu_versions)
-        slices = [slice(0, 0), slice(0, 2), slice(1, 5, 2), slice(5, 0), slice(0, -1), slice(2, -2)]
+        slices = [slice(0, 0), slice(0, 2), slice(1, 5, 2), slice(5, 0),
+                slice(0, -1), slice(2, -2)]
         for s in slices:
             self.assertEqual(sl[s], list(self.ubuntu_versions[s]))
 
@@ -255,8 +257,10 @@ class SkipListTestCase(unittest.TestCase):
 
     def test_union(self):
         sl1, sl2 = self._get_lists()
-        self.assertEqual(list(sl1 | sl2), [('k1', 1), ('k2', 2), ('k99', 2), ('k3', 3), ('k4', 4)])
-        self.assertEqual(list(sl2 | sl1), [('k1', 1), ('k2', 2), ('k99', 2), ('k4', 4), ('k3', 33)])
+        self.assertEqual(list(sl1 | sl2),
+                [('k1', 1), ('k2', 2), ('k99', 2), ('k3', 3), ('k4', 4)])
+        self.assertEqual(list(sl2 | sl1),
+                [('k1', 1), ('k2', 2), ('k99', 2), ('k4', 4), ('k3', 33)])
 
     def test_intersection(self):
         sl1, sl2 = self._get_lists()

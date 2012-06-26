@@ -1,6 +1,6 @@
 from redis import Redis
 
-from redis_completion.base import BaseEngine, AGGRESSIVE_STOP_WORDS, DEFAULT_STOP_WORDS
+from redis_completion.base import BaseEngine
 
 
 class RedisEngine(BaseEngine):
@@ -9,10 +9,11 @@ class RedisEngine(BaseEngine):
     ----------
 
     http://antirez.com/post/autocomplete-with-redis.html
-    http://stackoverflow.com/questions/1958005/redis-autocomplete/1966188#1966188
-    http://patshaughnessy.net/2011/11/29/two-ways-of-using-redis-to-build-a-nosql-autocomplete-search-index
+    http://stackoverflow.com/questions/1958005/redis-autocomplete/1966188#1966188  # NOQA
+    http://patshaughnessy.net/2011/11/29/two-ways-of-using-redis-to-build-a-nosql-autocomplete-search-index  # NOQA
     """
-    def __init__(self, min_length=2, prefix='ac', stop_words=None, cache_timeout=300, **conn_kwargs):
+    def __init__(self, min_length=2, prefix='ac', stop_words=None,
+            cache_timeout=300, **conn_kwargs):
         super(RedisEngine, self).__init__(min_length, prefix, stop_words)
 
         self.conn_kwargs = conn_kwargs
@@ -36,7 +37,7 @@ class RedisEngine(BaseEngine):
 
         # batch keys
         for i in range(0, len(keys), batch_size):
-            self.client.delete(*keys[i:i+batch_size])
+            self.client.delete(*keys[i:i + batch_size])
 
     def store(self, obj_id, title=None, data=None):
         pipe = self.client.pipeline()
@@ -60,7 +61,6 @@ class RedisEngine(BaseEngine):
     def remove(self, obj_id):
         obj_id = str(obj_id)
         title = self.client.hget(self.title_key, obj_id) or ''
-        keys = []
 
         for word in self.clean_phrase(title):
             for partial_key in self.autocomplete_keys(word):

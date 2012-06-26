@@ -1,4 +1,4 @@
-import os
+
 from setuptools import setup, find_packages
 
 
@@ -10,7 +10,7 @@ setup(
     author_email='coleifer@gmail.com',
     url='http://github.com/coleifer/redis-completion/tree/master',
     packages=find_packages(),
-    package_data = {
+    package_data={
         'redis_completion': [
         ],
     },

@@ -4,6 +4,7 @@ import unittest
 
 from redis_completion import tests
 
+
 def runtests(*test_args):
     suite = unittest.TestLoader().loadTestsFromModule(tests)
     result = unittest.TextTestRunner(verbosity=2).run(suite)
